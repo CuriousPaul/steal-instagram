@@ -34,7 +34,7 @@ Account URL shapes: IG `instagram.com/<handle>/`; YouTube `/@handle`, `/channel/
 
 ## §YouTube
 - **Mostly open** (no login for browsing), but logging in avoids consent walls and unlocks consistent counts. Some videos age/region-gated.
-- **Account scan**: go to `<channel>/videos`, then click **정렬: 인기 동영상 / Popular** to rank by views (this is the goldmine — what works). `get_page_text` on the Videos grid yields rows of `title · views · age`. Then `<channel>/shorts` for Shorts (the card-news/Reel analog).
+- **Account scan**: go to `<channel>/videos`, then open the **Sort by** menu and pick **인기 동영상 / Popular** to rank by views (this is the goldmine — what works). The menu label follows the browser UI language; if you don't see Korean, look for "Sort by → Popular". `get_page_text` on the Videos grid yields rows of `title · views · age`. Then `<channel>/shorts` for Shorts (the card-news/Reel analog).
 - **Title = hook**; thumbnail = visual hook (screenshot the grid to read thumbnail text/face/style).
 - **Per-video deep-dive (post mode)**: open `/watch?v=…`; `get_page_text` gives title, view count, like count (exact likes sometimes hidden), description, and top comments. Chapters/timestamps in the description reveal structure. For Shorts, treat like a Reel (seek frames if on-screen text matters).
 - **Engagement read**: views + like + comment; "added N months ago" gives cadence. Sort-by-popular already encodes the win/lose signal.

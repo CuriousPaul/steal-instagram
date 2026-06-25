@@ -16,11 +16,16 @@
 ```js
 (() => {
   const v = document.querySelector('video');
-  const nextBtn = document.querySelector('button[aria-label*="다음"],button[aria-label*="Next"]');
-  return JSON.stringify({ hasVideo: !!v, hasNext: !!nextBtn });
+  // Match the next-arrow across UI languages: aria-label OR a list/dot pager.
+  const nextBtn = document.querySelector(
+    'button[aria-label*="다음"],button[aria-label*="Next"],button[aria-label*="次"],button[aria-label*="Siguiente"]'
+  ) || document.querySelector('ul li button, [role="button"][tabindex]');
+  const dots = document.querySelectorAll('div[role="tablist"] > *, ._acnb').length; // carousel dot pager
+  return JSON.stringify({ hasVideo: !!v, hasNext: !!nextBtn || dots > 1, dots });
 })()
 ```
-- `hasVideo` → Reel/video (use §2A). `hasNext` (no video) → carousel (use §2B). Neither → single image.
+- `hasVideo` → Reel/video (use §2A). `hasNext`/`dots>1` (no video) → carousel (use §2B). Neither → single image.
+- Selectors above are best-effort; IG class names (`._acnb`) and aria-labels change often and depend on the UI language. If the next-arrow isn't found, **fall back to a visual click**: screenshot, then click the right-edge chevron by position rather than relying on a selector.
 
 ## 2A. Reel / video — seek-and-capture (the reliable method)
 Control the `<video>` element and screenshot evenly spaced frames. Do NOT rely on it playing.
@@ -41,8 +46,9 @@ Tips:
 
 ## 2B. Carousel — step through slides
 - `get_page_text` → caption.
-- Screenshot slide 1. Click the right/next arrow (`button[aria-label*="다음"]` / `*="Next"`), wait, screenshot.
-  Repeat until the "N/N" indicator stops advancing or the next arrow disappears.
+- Screenshot slide 1. Click the right/next arrow (try `button[aria-label*="다음"]` / `*="Next"`; if the
+  selector misses — different UI language or changed markup — click the right-edge chevron by position from
+  the screenshot). Wait, screenshot. Repeat until the dot pager stops advancing or the arrow disappears.
 - Logged-out carousels usually won't advance past slide 1 — needs login.
 
 ## 3. Read frames (vision)

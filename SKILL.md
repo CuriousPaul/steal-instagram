@@ -56,8 +56,8 @@ Full workflow in `references/account_scan.md`; platform-specific selectors/JS in
 1. **Profile snapshot** — handle, follower/subscriber count, bio/positioning, profile link (monetization hub), highlights/playlists, post/video count.
 2. **Content list (broad scan)** — scan the grid (IG) / Videos+Shorts tabs sorted by Popular (YouTube) / profile feed (TikTok). For each item capture the **cover hook / title**, format, and **engagement** (likes·comments·views). The cover/title IS the hook payload. Aim for 15–30 items; record in a table.
 3. **Pick representative + top performers** — choose 3–6 items that (a) are the highest-engagement and (b) span the account's format range. Deep-dive each with §A Post mode to pull full caption, funnel keyword, hashtags, and frame copy.
-4. **Mine the patterns** — recurring **hook formulas** (generalize the headline templates), format mix (carousel vs reel/short, info vs emotion vs sales), **tone & authority devices**, the **comment-keyword → DM funnel**, hashtag strategy (count differs by format), posting cadence, and what actually outperforms.
-5. **Write the benchmark plan** — save to `references_library/<account>_benchmark_plan.md` using `references/plan_template.md`. Sections: 계정 스냅샷 · 콘텐츠 리스트(표) · 콘텐츠 분석(후킹 공식·포맷·톤·퍼널·해시태그·한계) · **keens 적용 기획안**(후크 변환표·주제 N선·카드 템플릿·캡션 공식·CTA 퍼널·주의) · **kr_batch.json 배치 힌트**.
+4. **Mine the patterns** — recurring **hook formulas** (generalize the headline templates), the **caption N-beat formula** (capture the actual beat count, not a fixed 6), format/content mix (carousel vs reel/short, info vs emotion vs sales), **tone & authority devices**, the **comment-keyword → DM funnel** (or, for 담론/share-bait accounts, the no-funnel KPI), hashtag strategy (count differs by format), posting cadence, an **honest read** of what actually outperforms, and where it's weak.
+5. **Write the benchmark plan** — save to `references_library/<account>_benchmark_plan.md` using `references/plan_template.md`. Sections: 계정 스냅샷 · 콘텐츠 리스트(표) · 콘텐츠 분석(후킹 공식·캡션 N단·포맷/믹스·톤·퍼널·해시태그·솔직한 평가) · **keens 적용 기획안**(후크 변환표·주제 N선·카드 템플릿·캡션 공식·CTA 퍼널·브랜드 가드) · **kr_batch.json 배치 힌트**.
 
 ---
 
@@ -67,7 +67,7 @@ A reference/plan that lets the Keens content engine reuse the *patterns* (struct
 ## Ethics & IP (non-negotiable)
 - Extract **ideas, structure, design principles, tactics** (not copyrightable) → generate original copy and visuals. Do **not** reproduce a competitor's slides, photos, titles, thumbnails, or caption verbatim.
 - Respect each platform's ToS; don't scrape at scale, don't store commenters' personal data, no PII.
-- Honor Keens brand guardrails when applying: no exaggerated/guaranteed claims; careful with trainee mental-health, body, or appearance topics; verify USP claims before publishing.
+- Honor Keens brand guardrails when applying: **no disparaging or unverified claims about rival agencies, artists, or idols** (reframe to educational/neutral); no exaggerated or guaranteed ("무조건 합격/데뷔") claims; careful with trainee mental-health, body, weight, or appearance topics; verify USP claims ("RIIZE·aespa 트레이너" 등) before publishing.
 - Generated references are drafts from public info; the user is responsible for final use. Mirrors Kakashi's "Steal Like an Artist": learn the pattern, make it yours.
 
 ## Report back on the Issue

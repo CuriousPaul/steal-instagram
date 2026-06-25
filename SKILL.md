@@ -1,83 +1,82 @@
 ---
 name: steal-instagram
 description: >-
-  Analyze an Instagram post — carousel "card news", Reel/video, or single image — from its URL and
-  extract a structured reference: per-slide on-screen copy, hook/structure, design tokens (colors,
-  fonts, layout), graphic vocabulary, caption (KO/EN), CTA / comment-to-DM lead magnet, and engagement
-  signals. Use whenever someone shares an Instagram URL and wants it analyzed, "훔쳐"/"이거 분석해"/"이 카드뉴스
-  뜯어봐"/"레퍼런스로 저장", wants to study a competitor's carousel or Reel, capture a hook formula, or turn an
-  IG reference into reusable card-news patterns. Outputs a reference .md (and optional batch-JSON hints
-  for the keens-cardnews pipeline). Requires a browser session that is LOGGED IN to Instagram.
+  Analyze a social reference — a single POST or a whole ACCOUNT/CHANNEL — on Instagram, YouTube, or
+  TikTok, and turn it into a structured, reusable reference for Keens card-news. POST mode extracts
+  per-slide/frame on-screen copy, hook/structure, design tokens, caption (KO/EN), comment-to-DM lead
+  magnet, and engagement. ACCOUNT mode scans a profile/channel, builds a content list with
+  engagement, mines the recurring hook formulas / formats / funnel / cadence, then writes a benchmark
+  plan: 콘텐츠 리스트 + 콘텐츠 분석 + how to apply it to Keens (+ kr_batch.json batch hints). Use whenever
+  someone shares an IG/YouTube/TikTok URL — "이 계정 분석해줘", "레퍼런스 계정인데 우리한테 어떻게 적용", "이 카드뉴스 뜯어봐",
+  "훔쳐", "벤치마크 계정", studying a competitor, capturing a hook formula, or building an application plan.
+  Requires a browser session LOGGED IN to the platform.
 ---
 
-# Steal Instagram — Reference Extractor
+# Steal — Social Reference Extractor (IG / YouTube / TikTok)
 
-Turn an Instagram post into a structured, reusable **reference** for card-news work. Specialized sibling of Kakashi's Phase 5 (image/UI analysis), tuned for Instagram card-news/Reels: it extracts the *content structure and design system*, not generic app data models.
+Turn a competitor's **post** or **whole account** into structured, reusable **patterns** for Keens card-news — never a copy. Specialized sibling of Kakashi's Phase 5 (image/UI analysis), tuned for social card-news/Reels/Shorts: it extracts *content structure, hook formulas, design system, and funnel*, then maps them onto the Keens pipeline.
 
-## Hard prerequisite: a logged-in IG session
-Logged-out Instagram blocks video playback and gates carousels behind a signup modal — you'll only get the cover frame + caption. Real frame extraction **requires the controlled browser to be logged into Instagram**. If you hit a login wall (top-right shows 로그인/가입하기, or a "가입하기" modal, or playback won't start / `video.readyState` stays 0):
-1. Tell the user the controlled browser isn't logged into IG.
-2. Navigate to `https://www.instagram.com/accounts/login/?next=<post path>` and ask them to log in themselves (you must NOT enter credentials — entering passwords is prohibited).
-3. If multiple browsers are connected, have them pick the logged-in one (the browser tools enforce a selection step).
+## Two modes — detect from the URL first
+| URL shape | Mode | Goes to |
+|---|---|---|
+| IG `/p/…` or `/reel/…`, YouTube `/watch?v=…`/`/shorts/…`, TikTok `/@user/video/…` | **POST** | §A Post mode |
+| IG `/<handle>/`, YouTube `/@handle`·`/channel/…`·`/c/…`, TikTok `/@handle` | **ACCOUNT** | §B Account mode |
+
+If the user gives an account URL and wants a single post, ask which; if they give a post and want the whole account, climb to the profile.
+
+## Hard prerequisite: a logged-in session
+Logged-out platforms gate content: IG hides carousels/video behind a signup modal and blocks scrolling past ~12 posts; YouTube is mostly open but age/region-gates some video; TikTok throttles logged-out browsing hard. Real extraction **requires the controlled browser to be logged in** to the target platform.
+If you hit a login wall (IG 로그인/가입하기 modal or "계속하려면 로그인"; TikTok login overlay; video `readyState` stays 0):
+1. Tell the user the controlled browser isn't logged into that platform.
+2. If multiple browsers are connected, have them pick the logged-in one (the browser tools enforce a selection step — a different Chrome profile may be the logged-in one).
+3. Navigate to the platform's login page with `?next=<path>` and ask them to log in **themselves**. You must NEVER enter credentials or bypass any login/bot-check (prohibited).
 4. Resume once they confirm.
 
-Never enter credentials, never bypass the login or any bot-check. This is observation of public content only — extract patterns, generate original work (see Ethics).
+This is observation of public content only. Extract patterns → generate **original** Keens work (see Ethics).
 
 ## Heartbeat model
-You may run in short windows. Save the reference file and screenshots incrementally and note progress on the Issue, so a later window resumes without re-capturing.
+You may run in short windows. Save the reference/plan file and screenshots incrementally and note progress on the Issue, so a later window resumes without re-capturing.
 
-## Workflow
+---
 
-### 1. Open and identify media type
-Navigate to the URL (browser tools). Read the caption + metadata with `get_page_text`. Determine the type:
-- **Single image** → one screenshot.
-- **Carousel** (multi-image, "1/N" dots, next arrow) → step through slides.
-- **Reel / video** (play button, `<video>` element) → seek-and-capture frames (recipe below).
+## §A. POST mode — single post deep-dive
+Full browser technique (video seek-frame capture, carousel stepping, login, troubleshooting) is in `references/extraction_recipe.md`. Summary:
 
-If unsure, look for a `<video>` element (Reel) vs. a next-arrow button (carousel).
+1. **Open & identify type** — `get_page_text` for caption/metadata; detect `<video>` (Reel/Short/video) vs next-arrow (carousel) vs single image.
+2. **Capture frames** — Reel/video: control the `<video>` element, seek evenly spaced timestamps, screenshot ~8–12 frames. Carousel: screenshot, click next, repeat to last slide.
+3. **Vision-analyze** — per frame: kicker/label, headline (+ emphasized/colored words), subhead, stat/index, CTA; design tokens (bg, accent hex, fonts/weights, layout); graphic vocabulary.
+4. **Caption, signals, funnel** — full caption (KO/EN), hashtags, `dm_keyword`, like/comment/view counts, date, tool credits. Comments ≫ likes usually = a working comment→DM lead magnet.
+5. **Write the reference** — save to `references_library/<account>-<topic>.md` using `references/reference_schema.md`. Include source, one-line, stealable patterns, **how it applies to keens-cardnews**, batch-JSON hints, and a Verdict.
 
-### 2. Capture frames — the working recipe
-Full technique with exact JS in `references/extraction_recipe.md`. Summary:
+---
 
-**Reel / video** — control the `<video>` element directly and screenshot evenly spaced frames (this is more reliable than watching it play):
-```js
-// 1) inspect
-const v=document.querySelector('video'); v.muted=true; v.pause();
-// returns duration, readyState, videoWidth/Height
-// 2) for each timestamp t in evenly spaced 0..duration:
-v.pause(); v.currentTime = t;   // then wait ~1s and screenshot
-```
-Sample ~8–12 frames across the duration. On-screen text is the payload — slides in these tutorials change every 1–3s, so denser sampling near transitions helps.
+## §B. ACCOUNT mode — profile/channel benchmark
+Full workflow in `references/account_scan.md`; platform-specific selectors/JS in `references/platforms.md`. Summary:
 
-**Carousel** — screenshot slide 1, click the next arrow, screenshot, repeat to the last slide (watch the "N/N" indicator). Caption comes from `get_page_text`.
+1. **Profile snapshot** — handle, follower/subscriber count, bio/positioning, profile link (monetization hub), highlights/playlists, post/video count.
+2. **Content list (broad scan)** — scan the grid (IG) / Videos+Shorts tabs sorted by Popular (YouTube) / profile feed (TikTok). For each item capture the **cover hook / title**, format, and **engagement** (likes·comments·views). The cover/title IS the hook payload. Aim for 15–30 items; record in a table.
+3. **Pick representative + top performers** — choose 3–6 items that (a) are the highest-engagement and (b) span the account's format range. Deep-dive each with §A Post mode to pull full caption, funnel keyword, hashtags, and frame copy.
+4. **Mine the patterns** — recurring **hook formulas** (generalize the headline templates), format mix (carousel vs reel/short, info vs emotion vs sales), **tone & authority devices**, the **comment-keyword → DM funnel**, hashtag strategy (count differs by format), posting cadence, and what actually outperforms.
+5. **Write the benchmark plan** — save to `references_library/<account>_benchmark_plan.md` using `references/plan_template.md`. Sections: 계정 스냅샷 · 콘텐츠 리스트(표) · 콘텐츠 분석(후킹 공식·포맷·톤·퍼널·해시태그·한계) · **keens 적용 기획안**(후크 변환표·주제 N선·카드 템플릿·캡션 공식·CTA 퍼널·주의) · **kr_batch.json 배치 힌트**.
 
-### 3. Vision-analyze the frames
-For each captured frame/slide, read:
-- **On-screen copy** — kicker/label, headline (note emphasized/colored words), subhead, stat/index numbers, CTA text.
-- **Structure** — the card sequence (e.g. 도입→문제→관점전환→체크리스트→CTA), number of slides, pager style ("04/10", "넘겨보기 →").
-- **Design tokens** — background, accent/highlight color (hex estimate), font family, weight hierarchy, layout (where text sits), radius/spacing feel.
-- **Graphic vocabulary** — index numbers, formula/structure cards, tick lines, bars, checkboxes, photo vs. flat, tone inversions.
-- **CTA / lead magnet** — is there a "comment a keyword → DM" mechanic? capture the keyword and offer.
-
-### 4. Pull caption, signals, funnel
-From `get_page_text`: full caption (KO and/or EN), hashtags, `dm_keyword`, like/comment counts, posted date, tool/editor credits. High comment-vs-like ratio usually signals a working comment→DM lead magnet — note it.
-
-### 5. Write the reference
-Save to `references_library/<account>-<topic>.md` using the schema in `references/reference_schema.md`. Always include: Source metadata, one-line, stealable patterns, **how it applies to keens-cardnews** (concrete), batch-JSON hints if the structure maps cleanly, and a Verdict (Reference vs. Skill vs. Clone-spec). Tag it (#hook #carousel #design-tokens #cta etc.).
+---
 
 ## Output — what good looks like
-A reference that lets the content engine reuse the *patterns* (structure, hook formula, design tokens, funnel) to generate **original** Keens content — not a copy. See `examples/prompt_what-claude-cardnews.md` for a complete worked example produced from a real Reel (incl. extracted project-instruction principles and design system).
+A reference/plan that lets the Keens content engine reuse the *patterns* (structure, hook formula, design tokens, funnel) to generate **original** content. The account-mode plan ends with concrete next actions and a `kr_batch.json` draft the `keens-cardnews` skill can build from. See `examples/prompt_what-claude-cardnews.md` for a worked post example.
 
 ## Ethics & IP (non-negotiable)
-- Extract **ideas, structure, design principles, tactics** (not copyrightable) → generate original copy and visuals. Do **not** reproduce a competitor's slides, photos, or caption verbatim.
-- Respect Instagram ToS; don't scrape at scale, don't store personal data of commenters, no PII.
-- Generated references are drafts from public info; the user is responsible for final use.
-- This mirrors Kakashi's "Steal Like an Artist" principle: learn the pattern, make it yours.
+- Extract **ideas, structure, design principles, tactics** (not copyrightable) → generate original copy and visuals. Do **not** reproduce a competitor's slides, photos, titles, thumbnails, or caption verbatim.
+- Respect each platform's ToS; don't scrape at scale, don't store commenters' personal data, no PII.
+- Honor Keens brand guardrails when applying: no exaggerated/guaranteed claims; careful with trainee mental-health, body, or appearance topics; verify USP claims before publishing.
+- Generated references are drafts from public info; the user is responsible for final use. Mirrors Kakashi's "Steal Like an Artist": learn the pattern, make it yours.
 
 ## Report back on the Issue
-Summarize: media type, # slides/frames captured, the hook formula, design tokens, funnel mechanic, and the 2–3 most actionable upgrades for keens-cardnews. Link the saved reference file.
+Summarize: mode, platform, items scanned + deep-dived, the dominant hook formula, design tokens, funnel mechanic, and the 2–3 most actionable upgrades for Keens. Link the saved reference/plan file (+ batch JSON if written).
 
 ## Bundled resources
-- `references/extraction_recipe.md` — exact browser technique (video seek-frame capture, carousel stepping, login handling, troubleshooting).
-- `references/reference_schema.md` — output reference .md schema + batch-JSON mapping.
-- `examples/prompt_what-claude-cardnews.md` — full worked example.
+- `references/account_scan.md` — ACCOUNT-mode workflow (scan → content list → top-performer selection → synthesis → plan).
+- `references/platforms.md` — IG / YouTube / TikTok specifics: URL detection, login walls, engagement extraction, selectors & JS snippets.
+- `references/extraction_recipe.md` — POST-mode browser technique (video seek-frame capture, carousel stepping, login, troubleshooting).
+- `references/reference_schema.md` — POST-mode reference .md schema + batch-JSON mapping.
+- `references/plan_template.md` — ACCOUNT-mode benchmark-plan .md template + kr_batch.json hint mapping.
+- `examples/prompt_what-claude-cardnews.md` — full worked example from a real Reel.
